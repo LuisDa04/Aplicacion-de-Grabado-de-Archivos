@@ -35,12 +35,32 @@ namespace AppForm
             tab1.Controls.Add(dgv1);
             tab2.Controls.Add(dgv2);
 
+            dgv1.Rows.Add("Animado (corto variado)", 2);
+            dgv1.Rows.Add("Serie", 3);
+            dgv1.Rows.Add("Show latino", 3);
+            dgv1.Rows.Add("Novela", 3);
+            dgv1.Rows.Add("Serie dorama", 4);
+            dgv1.Rows.Add("Documental", 3);
+            dgv1.Rows.Add("Concurso reality", 7);
+            dgv1.Rows.Add("Pelicula (AVI/MPG/VOB)", 7);
+            dgv1.Rows.Add("Pelicula (HD/MP4)", 20);
+            dgv1.Rows.Add("Deporte", 10);
+            dgv1.Rows.Add("Musica/video", 100);
+            dgv1.Rows.Add("Juego (detective)", 50);
+            dgv1.Rows.Add("Juego (PC)", 100);
+            dgv1.Rows.Add("Windows Pak Drivers", 100);
+            dgv1.Rows.Add("Booteable", 300);
+            dgv1.Rows.Add("Paquete semanal", 400);
+
+            dgv1.AllowUserToAddRows = false;
+
             dgv2.AllowUserToAddRows = false;
             dgv2.ReadOnly = true;
 
             // Agregar columnas al DataGridView de Precios
             dgv1.Columns.Add("Producto", "Producto");
             dgv1.Columns.Add("Precio", "Precio");
+            dgv1.Columns.Add("Cantidad", "Cantidad");
 
             dgv1.Dock = DockStyle.Fill;
 
@@ -54,8 +74,13 @@ namespace AppForm
             Button btnSeleccionar = new Button
             {
                 Text = "Seleccionar",
-                Dock = DockStyle.Bottom,
-                Height = 40
+                Anchor = AnchorStyles.Bottom | AnchorStyles.Right,
+                Size = new Size(100, 30),
+                Location = new Point(tab1.ClientSize.Width - 110, tab1.ClientSize.Height - 40)
+            };
+            tab1.Resize += (s, e) =>
+            {
+                btnSeleccionar.Location = new Point(tab1.ClientSize.Width - 110, tab1.ClientSize.Height - 40);
             };
 
             btnSeleccionar.Click += (s, e) =>
@@ -66,22 +91,20 @@ namespace AppForm
                     if (row.Cells["Precio"].Value != null &&
                         decimal.TryParse(row.Cells["Precio"].Value.ToString(), out decimal precio))
                     {
-                        suma += precio;
+                        int cantidad = 0;
+                        if (row.Cells["Cantidad"].Value != null)
+                            int.TryParse(row.Cells["Cantidad"].Value.ToString(), out cantidad);
+
+                        suma += precio * cantidad;
                     }
                 }
 
-                // Abrir ventana de pago y pasar referencia a dgv2
+                // Abrir ventana de pago con el total
                 PagoForm pagoForm = new PagoForm(suma, dgv2, contadorFacturas);
                 if (pagoForm.ShowDialog() == DialogResult.OK)
                 {
-                    contadorFacturas = pagoForm.GetContador(); // recoger el nuevo valor
+                    contadorFacturas = pagoForm.GetContador();
                 }
-            };
-
-            // Ajustar posición cuando cambie el tamaño de la pestaña
-            tab1.Resize += (s, e) =>
-            {
-                btnSeleccionar.Location = new Point(tab1.ClientSize.Width - 110, tab1.ClientSize.Height - 40);
             };
 
             // Agregar controles a pestañas
