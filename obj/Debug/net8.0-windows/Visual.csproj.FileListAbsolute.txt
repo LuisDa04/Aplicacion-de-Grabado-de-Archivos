@@ -24,11 +24,8 @@ D:\Luisi\trabajo\EstudioGrabacion\visual\Visual\bin\Debug\net8.0-windows\runtime
 D:\Luisi\trabajo\EstudioGrabacion\visual\Visual\bin\Debug\net8.0-windows\runtimes\linux-mips64\native\libe_sqlite3.so
 D:\Luisi\trabajo\EstudioGrabacion\visual\Visual\bin\Debug\net8.0-windows\runtimes\linux-musl-arm\native\libe_sqlite3.so
 D:\Luisi\trabajo\EstudioGrabacion\visual\Visual\bin\Debug\net8.0-windows\runtimes\linux-musl-arm64\native\libe_sqlite3.so
-D:\Luisi\trabajo\EstudioGrabacion\visual\Visual\bin\Debug\net8.0-windows\runtimes\linux-musl-riscv64\native\libe_sqlite3.so
-D:\Luisi\trabajo\EstudioGrabacion\visual\Visual\bin\Debug\net8.0-windows\runtimes\linux-musl-s390x\native\libe_sqlite3.so
 D:\Luisi\trabajo\EstudioGrabacion\visual\Visual\bin\Debug\net8.0-windows\runtimes\linux-musl-x64\native\libe_sqlite3.so
 D:\Luisi\trabajo\EstudioGrabacion\visual\Visual\bin\Debug\net8.0-windows\runtimes\linux-ppc64le\native\libe_sqlite3.so
-D:\Luisi\trabajo\EstudioGrabacion\visual\Visual\bin\Debug\net8.0-windows\runtimes\linux-riscv64\native\libe_sqlite3.so
 D:\Luisi\trabajo\EstudioGrabacion\visual\Visual\bin\Debug\net8.0-windows\runtimes\linux-s390x\native\libe_sqlite3.so
 D:\Luisi\trabajo\EstudioGrabacion\visual\Visual\bin\Debug\net8.0-windows\runtimes\linux-x64\native\libe_sqlite3.so
 D:\Luisi\trabajo\EstudioGrabacion\visual\Visual\bin\Debug\net8.0-windows\runtimes\linux-x86\native\libe_sqlite3.so
