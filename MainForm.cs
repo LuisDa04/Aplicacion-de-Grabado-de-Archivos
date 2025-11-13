@@ -127,9 +127,13 @@ namespace AppForm
             dgv1.Columns["Producto"].ReadOnly = true;
             dgv1.Columns["Precio"].ReadOnly = true;
             dgv1.RowHeadersVisible = false;
+            dgv1.AllowUserToResizeColumns = false;
+            dgv1.AllowUserToResizeRows = false;
 
             dgv2.AllowUserToAddRows = false;
             dgv2.ReadOnly = true;
+            dgv2.AllowUserToResizeColumns = false;
+            dgv2.AllowUserToResizeRows = false;
 
             dgv1.Columns["Producto"].Width = 250;
 
@@ -147,7 +151,7 @@ namespace AppForm
                 Text = "Limpiar Factura",
                 Width = 120,
                 Height = 30,
-                Location = new Point(dgv1.Left + 10, dgv1.Bottom + 360),
+                Location = new Point(dgv1.Left + 10, dgv1.Bottom + 345),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left
             };
             btnLimpiarFactura.Click += (s, e) =>
@@ -158,7 +162,7 @@ namespace AppForm
                         row.Cells["Cantidad"].Value = null;
                 }
             };
-            Controls.Add(btnLimpiarFactura);
+            tab1.Controls.Add(btnLimpiarFactura);
 
 
             Button btnSeleccionar = new Button
