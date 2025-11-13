@@ -26,7 +26,6 @@ namespace AppForm
             btnAcercaDe.Anchor = AnchorStyles.Right | AnchorStyles.Top;
             btnAcercaDe.Location = new Point(ClientSize.Width - btnAcercaDe.Width - 10, 10);
 
-            // Agregar el botón al formulario, antes del TabControl
             Controls.Add(btnAcercaDe);
             Controls.SetChildIndex(btnAcercaDe, 0);
 
@@ -92,6 +91,25 @@ namespace AppForm
             dgv2.Columns.Add("PagoTotal", "Pago Total");
             dgv2.Columns.Add("PagoEfectivo", "Efectivo");
             dgv2.Columns.Add("PagoTransferencia", "Transferencia");
+
+            Button btnLimpiarFactura = new Button
+            {
+                Text = "Limpiar Factura",
+                Width = 120,
+                Height = 30,
+                Location = new Point(dgv1.Left + 10, dgv1.Bottom + 360),
+                Anchor = AnchorStyles.Top | AnchorStyles.Left
+            };
+            btnLimpiarFactura.Click += (s, e) =>
+            {
+                foreach (DataGridViewRow row in dgv1.Rows)
+                {
+                    if (!row.IsNewRow)
+                        row.Cells["Cantidad"].Value = null;
+                }
+            };
+            Controls.Add(btnLimpiarFactura);
+
 
             Button btnSeleccionar = new Button
             {
@@ -175,7 +193,16 @@ namespace AppForm
 
         private void CrearBaseDatos()
         {
-            using (var connection = new SqliteConnection($"Data Source=facturas.db"))
+            string exeFolder = AppDomain.CurrentDomain.BaseDirectory;
+            string parentFolder = Directory.GetParent(exeFolder).FullName;
+            string carpetaBD = Path.Combine(parentFolder, "Base de Datos");
+            if (!Directory.Exists(carpetaBD))
+            {
+                Directory.CreateDirectory(carpetaBD);
+            }
+
+            string rutaDB = Path.Combine(carpetaBD, "facturas.db");
+            using (var connection = new SqliteConnection($"Data Source={rutaDB}"))
             {
                 connection.Open();
 
@@ -197,7 +224,15 @@ namespace AppForm
         private void CargarFacturas(DataGridView dgv)
         {
             dgv.Rows.Clear();
-            using (var connection = new SqliteConnection($"Data Source=facturas.db"))
+            string exeFolder = AppDomain.CurrentDomain.BaseDirectory;
+            string parentFolder = Directory.GetParent(exeFolder).FullName;
+            string carpetaBD = Path.Combine(parentFolder, "Base de Datos");
+            if (!Directory.Exists(carpetaBD))
+            {
+                Directory.CreateDirectory(carpetaBD);
+            }
+            string rutaDB = Path.Combine(carpetaBD, "facturas.db");
+            using (var connection = new SqliteConnection($"Data Source={rutaDB}"))
             {
                 connection.Open();
 
@@ -222,7 +257,16 @@ namespace AppForm
         {
             try
             {
-                using (var connection = new SqliteConnection($"Data Source=facturas.db"))
+                string exeFolder = AppDomain.CurrentDomain.BaseDirectory;
+                string parentFolder = Directory.GetParent(exeFolder).FullName;
+                string carpetaBD = Path.Combine(parentFolder, "Base de Datos");
+                if (!Directory.Exists(carpetaBD))
+                {
+                    Directory.CreateDirectory(carpetaBD);
+                }
+
+                string rutaDB = Path.Combine(carpetaBD, "facturas.db");
+                using (var connection = new SqliteConnection($"Data Source={rutaDB}"))
                 {
                     connection.Open();
 

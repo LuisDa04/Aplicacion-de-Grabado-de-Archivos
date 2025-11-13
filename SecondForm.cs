@@ -127,7 +127,16 @@ namespace AppForm
 
         private void GuardarFacturaEnBD(int noFactura, decimal total, decimal pagoEfectivo, decimal pagoTransferencia)
         {
-            using (var connection = new SqliteConnection($"Data Source=facturas.db"))
+            string exeFolder = AppDomain.CurrentDomain.BaseDirectory;
+            string parentFolder = Directory.GetParent(exeFolder).FullName;
+            string carpetaBD = Path.Combine(parentFolder, "Base de Datos");
+            if (!Directory.Exists(carpetaBD))
+            {
+                Directory.CreateDirectory(carpetaBD);
+            }
+
+            string rutaDB = Path.Combine(carpetaBD, "facturas.db");
+            using (var connection = new SqliteConnection($"Data Source={rutaDB}"))
             {
                 connection.Open();
 
