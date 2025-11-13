@@ -15,8 +15,25 @@ namespace AppForm
             
             contadorFacturas = ObtenerUltimoNumeroFactura() + 1;
 
+            Button btnAcercaDe = new Button
+            {
+                Text = "Acerca de",
+                Dock = DockStyle.Top,
+                Height = 30
+            };
+            btnAcercaDe.Click += BtnAcercaDe_Click;
+
+            btnAcercaDe.Anchor = AnchorStyles.Right | AnchorStyles.Top;
+            btnAcercaDe.Location = new Point(ClientSize.Width - btnAcercaDe.Width - 10, 10);
+
+            // Agregar el botón al formulario, antes del TabControl
+            Controls.Add(btnAcercaDe);
+            Controls.SetChildIndex(btnAcercaDe, 0);
+
             // Crear TabControl
             TabControl tabControl = new TabControl { Dock = DockStyle.Fill };
+
+            Panel panelPrecios = new Panel { Dock = DockStyle.Fill };
 
             // Crear pestañas
             TabPage tab1 = new TabPage("Precios");
@@ -24,7 +41,7 @@ namespace AppForm
             TabPage tab3 = new TabPage("Opciones");
 
             // Crear DataGridViews
-            DataGridView dgv1 = new DataGridView { Dock = DockStyle.Fill };
+            DataGridView dgv1 = new DataGridView { Dock = DockStyle.Top, Height = 400};
             DataGridView dgv2 = new DataGridView { Dock = DockStyle.Fill };
 
             // Estilo bonito
@@ -34,6 +51,12 @@ namespace AppForm
             // Agregar tablas a pestañas
             tab1.Controls.Add(dgv1);
             tab2.Controls.Add(dgv2);
+
+            
+            // Agregar columnas al DataGridView de Precios
+            dgv1.Columns.Add("Producto", "Producto");
+            dgv1.Columns.Add("Precio", "Precio");
+            dgv1.Columns.Add("Cantidad", "Cantidad");
 
             dgv1.Rows.Add("Animado (corto variado)", 2);
             dgv1.Rows.Add("Serie", 3);
@@ -53,14 +76,13 @@ namespace AppForm
             dgv1.Rows.Add("Paquete semanal", 400);
 
             dgv1.AllowUserToAddRows = false;
+            dgv1.Columns["Producto"].ReadOnly = true;
+            dgv1.Columns["Precio"].ReadOnly = true;
 
             dgv2.AllowUserToAddRows = false;
             dgv2.ReadOnly = true;
 
-            // Agregar columnas al DataGridView de Precios
-            dgv1.Columns.Add("Producto", "Producto");
-            dgv1.Columns.Add("Precio", "Precio");
-            dgv1.Columns.Add("Cantidad", "Cantidad");
+            dgv1.Columns["Producto"].Width = 250;
 
             dgv1.Dock = DockStyle.Fill;
 
@@ -74,15 +96,9 @@ namespace AppForm
             Button btnSeleccionar = new Button
             {
                 Text = "Seleccionar",
-                Anchor = AnchorStyles.Bottom | AnchorStyles.Right,
-                Size = new Size(100, 30),
-                Location = new Point(tab1.ClientSize.Width - 110, tab1.ClientSize.Height - 40)
+                Dock = DockStyle.Bottom,
+                Height = 40
             };
-            tab1.Resize += (s, e) =>
-            {
-                btnSeleccionar.Location = new Point(tab1.ClientSize.Width - 110, tab1.ClientSize.Height - 40);
-            };
-
             btnSeleccionar.Click += (s, e) =>
             {
                 decimal suma = 0;
@@ -92,8 +108,18 @@ namespace AppForm
                         decimal.TryParse(row.Cells["Precio"].Value.ToString(), out decimal precio))
                     {
                         int cantidad = 0;
+
                         if (row.Cells["Cantidad"].Value != null)
-                            int.TryParse(row.Cells["Cantidad"].Value.ToString(), out cantidad);
+                        {
+                            if (!int.TryParse(row.Cells["Cantidad"].Value.ToString(), out cantidad))
+                            {
+                                MessageBox.Show("Error: La columna 'Cantidad' solo admite números enteros.",
+                                                "Dato inválido",
+                                                MessageBoxButtons.OK,
+                                                MessageBoxIcon.Error);
+                                return; 
+                            }
+                        }
 
                         suma += precio * cantidad;
                     }
@@ -105,42 +131,35 @@ namespace AppForm
                 {
                     contadorFacturas = pagoForm.GetContador();
                 }
+                foreach (DataGridViewRow row in dgv1.Rows)
+                {
+                    row.Cells["Cantidad"].Value = null;
+                }
             };
 
             // Agregar controles a pestañas
             tab1.Controls.Add(dgv1);
             tab1.Controls.Add(btnSeleccionar);
+            tab1.Controls.Add(panelPrecios);
             tab2.Controls.Add(dgv2);
 
-            Label lbl = new Label
-            {
-                Text = "En desarrollo",
-                Dock = DockStyle.Top,
-                Font = new Font("Segoe UI", 12, FontStyle.Italic),
-                ForeColor = Color.DarkSlateBlue
-            };
-            tab3.Controls.Add(lbl);
 
             // Agregar pestañas al TabControl
             tabControl.TabPages.Add(tab1);
             tabControl.TabPages.Add(tab2);
-            tabControl.TabPages.Add(tab3);
 
             // Agregar al formulario
-            this.Controls.Add(tabControl);
-            this.Text = "Aplicacion de Grabacion";
-            this.Size = new Size(800, 600);
-
-            try
-            {
-                CrearBaseDatos();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al crear la base de datos: " + ex.Message);
-            }
+            Controls.Add(tabControl);
+            Text = "Aplicacion de Grabacion";
+            Size = new Size(800, 600);
 
             CargarFacturas(dgv2);
+        }
+
+        private void BtnAcercaDe_Click(object sender, EventArgs e)
+        {
+            AcercaDeForm acercaDe = new AcercaDeForm();
+            acercaDe.ShowDialog();
         }
 
         private void ApplyStyle(DataGridView dgv)
@@ -156,7 +175,7 @@ namespace AppForm
 
         private void CrearBaseDatos()
         {
-            using (var connection = new SqliteConnection("Data Source=facturas.db"))
+            using (var connection = new SqliteConnection($"Data Source=facturas.db"))
             {
                 connection.Open();
 
@@ -178,8 +197,7 @@ namespace AppForm
         private void CargarFacturas(DataGridView dgv)
         {
             dgv.Rows.Clear();
-
-            using (var connection = new SqliteConnection("Data Source=facturas.db"))
+            using (var connection = new SqliteConnection($"Data Source=facturas.db"))
             {
                 connection.Open();
 
@@ -202,15 +220,23 @@ namespace AppForm
 
         private int ObtenerUltimoNumeroFactura()
         {
-            using (var connection = new SqliteConnection("Data Source=facturas.db"))
+            try
             {
-                connection.Open();
+                using (var connection = new SqliteConnection($"Data Source=facturas.db"))
+                {
+                    connection.Open();
 
-                var command = connection.CreateCommand();
-                command.CommandText = "SELECT IFNULL(MAX(NoFactura), 0) FROM Facturas";
+                    var command = connection.CreateCommand();
+                    command.CommandText = "SELECT IFNULL(MAX(NoFactura), 0) FROM Facturas";
 
-                return Convert.ToInt32(command.ExecuteScalar());
+                    return Convert.ToInt32(command.ExecuteScalar());
+                }
             }
+            catch
+            {
+                CrearBaseDatos();
+                return 0;
+            }        
         }
 
     }

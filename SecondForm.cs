@@ -59,7 +59,7 @@ namespace AppForm
 
             btnSoloCalcular = new Button
             {
-                Text = "Solo calcular diferencia",
+                Text = "Calcular diferencia",
                 Location = new Point(20, 140),
                 Width = 150
             };
@@ -108,6 +108,12 @@ namespace AppForm
             decimal.TryParse(txtPagoEfectivo.Text, out pagoEfectivo);
             decimal.TryParse(txtPagoTransferencia.Text, out pagoTransferencia);
 
+            if (pagoEfectivo > total || (pagoEfectivo + pagoTransferencia) > total)
+            {
+                pagoEfectivo = total - pagoTransferencia;
+                if (pagoEfectivo < 0) pagoEfectivo = 0; 
+            }
+
             dgvFacturas.Rows.Add(contadorFacturas, DateTime.Now.ToShortDateString(), total,
                                 pagoEfectivo, pagoTransferencia);
 
@@ -119,10 +125,9 @@ namespace AppForm
         }
 
 
-
         private void GuardarFacturaEnBD(int noFactura, decimal total, decimal pagoEfectivo, decimal pagoTransferencia)
         {
-            using (var connection = new SqliteConnection("Data Source=facturas.db"))
+            using (var connection = new SqliteConnection($"Data Source=facturas.db"))
             {
                 connection.Open();
 
