@@ -23,8 +23,8 @@ namespace AppForm
             this.dgvFacturas = dgvFacturas;
             this.contadorFacturas = contadorFacturas;
 
-            this.Text = "Pago del Cliente";
-            this.Size = new Size(400, 300);
+            Text = "Pago del Cliente";
+            Size = new Size(400, 300);
 
             Label lblTotal = new Label
             {
@@ -32,6 +32,10 @@ namespace AppForm
                 Location = new Point(20, 20),
                 AutoSize = true
             };
+
+            lblTotal.Font = new Font("Segoe UI", 16, FontStyle.Bold | FontStyle.Italic); 
+            lblTotal.ForeColor = Color.Black;
+            lblTotal.TextAlign = ContentAlignment.MiddleCenter; 
 
             Label lblEfectivo = new Label
             {
@@ -80,6 +84,9 @@ namespace AppForm
                 AutoSize = true
             };
 
+            lblDiferencia.Font = new Font("Segoe UI", 10, FontStyle.Bold | FontStyle.Italic); 
+            lblDiferencia.ForeColor = Color.Black;
+
             Controls.Add(lblTotal);
             Controls.Add(lblEfectivo);
             Controls.Add(txtPagoEfectivo);
@@ -98,6 +105,12 @@ namespace AppForm
 
             decimal pagoCliente = pagoEfectivo + pagoTransferencia;
             decimal diferencia = pagoCliente - total;
+            if (pagoCliente < total)
+            {
+                MessageBox.Show("Monto insuficiente. La suma de pagos no cubre el total a pagar.",
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             lblDiferencia.Text = $"Total: {total:C} | Pagado: {pagoCliente:C} | Diferencia: {diferencia:C}";
         }
@@ -107,11 +120,19 @@ namespace AppForm
             decimal pagoEfectivo = 0, pagoTransferencia = 0;
             decimal.TryParse(txtPagoEfectivo.Text, out pagoEfectivo);
             decimal.TryParse(txtPagoTransferencia.Text, out pagoTransferencia);
+            decimal pagoCliente = pagoEfectivo + pagoTransferencia;
+            
+            if (pagoCliente < total)
+            {
+                MessageBox.Show("Monto insuficiente. La suma de pagos no cubre el total a pagar.",
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             if (pagoEfectivo > total || (pagoEfectivo + pagoTransferencia) > total)
             {
                 pagoEfectivo = total - pagoTransferencia;
-                if (pagoEfectivo < 0) pagoEfectivo = 0; 
+                if (pagoEfectivo < 0) pagoEfectivo = 0;
             }
 
             dgvFacturas.Rows.Add(contadorFacturas, DateTime.Now.ToShortDateString(), total,

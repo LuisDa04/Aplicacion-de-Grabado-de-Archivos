@@ -51,11 +51,60 @@ namespace AppForm
             tab1.Controls.Add(dgv1);
             tab2.Controls.Add(dgv2);
 
+            DataGridViewButtonColumn colBoton = new DataGridViewButtonColumn();
+            colBoton.Name = "Agregar";
+            colBoton.HeaderText = "";
+            colBoton.Text = "+";
+            colBoton.UseColumnTextForButtonValue = true;
+            colBoton.Width = 40;
+
+            dgv1.CellClick += (s, e) =>
+            {
+                if (e.RowIndex >= 0 && dgv1.Columns[e.ColumnIndex].Name == "Agregar")
+                {
+                    var celdaCantidad = dgv1.Rows[e.RowIndex].Cells["Cantidad"];
+
+                    int cantidadActual = 0;
+                    if (celdaCantidad.Value != null)
+                        int.TryParse(celdaCantidad.Value.ToString(), out cantidadActual);
+
+                    celdaCantidad.Value = cantidadActual + 1;
+                }
+            };
+
+            dgv1.CellPainting += (s, e) =>
+            {
+                if (e.ColumnIndex >= 0 && dgv1.Columns[e.ColumnIndex].Name == "Agregar" && e.RowIndex >= 0)
+                {
+                    e.Graphics.FillRectangle(new SolidBrush(dgv1.DefaultCellStyle.BackColor), e.CellBounds);
+
+                    using (Brush b = new SolidBrush(Color.LightBlue))
+                    {
+                        int size = Math.Min(e.CellBounds.Width, e.CellBounds.Height) - 6;
+                        int x = e.CellBounds.Left + (e.CellBounds.Width - size) / 2;
+                        int y = e.CellBounds.Top + (e.CellBounds.Height - size) / 2;
+
+                        e.Graphics.FillEllipse(b, x, y, size, size);
+
+                        using (Font f = new Font("Segoe UI", 10, FontStyle.Bold))
+                        {
+                            TextRenderer.DrawText(e.Graphics, "+", f,
+                                new Rectangle(x, y, size, size),
+                                Color.White,
+                                TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+                        }
+                    }
+
+                    e.Handled = true; 
+                }
+            };
+
             
             // Agregar columnas al DataGridView de Precios
             dgv1.Columns.Add("Producto", "Producto");
             dgv1.Columns.Add("Precio", "Precio");
             dgv1.Columns.Add("Cantidad", "Cantidad");
+            dgv1.Columns.Add(colBoton);
 
             dgv1.Rows.Add("Animado (corto variado)", 2);
             dgv1.Rows.Add("Serie", 3);
@@ -77,6 +126,7 @@ namespace AppForm
             dgv1.AllowUserToAddRows = false;
             dgv1.Columns["Producto"].ReadOnly = true;
             dgv1.Columns["Precio"].ReadOnly = true;
+            dgv1.RowHeadersVisible = false;
 
             dgv2.AllowUserToAddRows = false;
             dgv2.ReadOnly = true;
@@ -119,6 +169,27 @@ namespace AppForm
             };
             btnSeleccionar.Click += (s, e) =>
             {
+                bool hayCantidad = false;
+                foreach (DataGridViewRow row in dgv1.Rows)
+                {
+                    if (!row.IsNewRow)
+                    {
+                        var valor = row.Cells["Cantidad"].Value;
+                        if (valor != null && !string.IsNullOrWhiteSpace(valor.ToString()))
+                        {
+                            hayCantidad = true;
+                            break; 
+                        }
+                    }
+                }
+
+                if (!hayCantidad)
+                {
+                    MessageBox.Show("No hay datos que procesar en la columna Cantidad.",
+                                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return; 
+                }
+                
                 decimal suma = 0;
                 foreach (DataGridViewRow row in dgv1.Rows)
                 {
